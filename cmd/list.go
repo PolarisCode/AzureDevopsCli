@@ -43,12 +43,18 @@ var listCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		index := 0
 		for responseValue != nil {
 			// Log the page of team project names
-			for _, teamProjectReference := range (*responseValue).Value {
-				fmt.Printf("%v. %v\n", index, *teamProjectReference.Name)
-				index++
+			for _, team := range (*responseValue).Value {
+				desc := ""
+				if team.Description != nil {
+					desc = *team.Description
+					if len(desc) > 60 {
+						desc = desc[:60] + "..."
+					}
+				}
+
+				fmt.Printf("- %-50v %v\n", *team.Name, desc)
 			}
 
 			// if continuationToken has a value, then there is at least one more page of projects to get
@@ -71,13 +77,5 @@ var listCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(listCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// listCmd.PersistentFlags().String("top", "", "Get top N elements")
 }
